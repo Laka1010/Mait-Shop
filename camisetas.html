@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Camisetas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header>
+    <h1>Camisetas</h1>
+    <button class="cart-button" id="openCartBtn">
+        💰 Carrito
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <button class="pantalones-button" onclick="window.location.href='index.html'">
+        🔙
+    </button>
+    <nav class="nav-menú">
+    <button class="menu-toggle" id="menuToggle">
+    ☰ Categorías
+    </button>
+    <ul class="menu-dropdown" id="menuDropdown">
+        <li><a href="camisetas.html" class="menu-item">👕 Camisetas</a></li>
+        <li><a href="zapatos.html" class="menu-item">👞 Zapatos</a></li>
+        <li><a href="pantalones.html" class="menu-item">👖 Pantalones</a></li>
+    </ul>
+    </nav>
+</header>
+
+<main>
+    <section>
+        <h3 class="products-title">Camisetas</h3>
+        <div class="products-grid" id="productsGrid"></div>
+    </section>
+</main>
+
+<!-- Panel del carrito -->
+<aside class="cart-panel" id="cartPanel">
+    <div class="cart-header">
+        <h3>Tu carrito</h3>
+        <button class="cart-close" id="closeCartBtn">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+        <div class="cart-total">
+            <span>Total:</span>
+            <span id="cartTotal">0,00 €</span>
+        </div>
+        <button class="cart-checkout" id="checkoutBtn">Finalizar compra</button>
+    </div>
+</aside>
+
+<footer>
+    © <span id="year"></span> Mait Shop · Demo
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

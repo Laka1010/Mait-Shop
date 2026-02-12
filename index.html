@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mait</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Modal Registro -->
+  <div class="modal" id="registerModal">
+    <div class="modal-content">
+      <h3>Registrarse</h3>
+      <input type="email" id="regEmail" placeholder="Correo">
+      <input type="password" id="regPassword" placeholder="Contraseña">
+      <button id="registerBtn">Registrar</button>
+      <button class="closeModal">Cerrar</button>
+    </div>
+
+<!-- Modal Login -->
+<div class="modal" id="loginModal">
+  <div class="modal-content">
+    <h3>Iniciar sesión</h3>
+    <input type="email" id="logEmail" placeholder="Correo">
+    <input type="password" id="logPassword" placeholder="Contraseña">
+    <button id="loginBtn">Entrar</button>
+    <button class="closeModal">Cerrar</button>
+  </div>
+</div>
+
+</head>
+<body>
+  <header>
+    <nav class="nav-menú">
+      <button class="menu-toggle" id="menuToggle">
+        ☰ Categorías
+      </button>
+      <ul class="menu-dropdown" id="menuDropdown">
+        <li><a href="camisetas.html" class="menu-item">👕 Camisetas</a></li>
+        <li><a href="zapatos.html" class="menu-item">👞 Zapatos</a></li>
+        <li><a href="pantalones.html" class="menu-item">👖 Pantalones</a></li>
+      </ul>
+    </nav>
+    
+    <h1>Mait shop</h1>
+    
+    <button class="cart-button" id="openCartBtn">
+      💰 Carrito
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+
+    <div class="auth-buttons">
+      <button id="btnLogin">Iniciar sesión</button>
+      <button id="btnRegister">Registrarse</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h2>Bienvenido a la tienda Mait</h2>
+        <p>
+          Este es un ejemplo de tienda en línea con carrito de compras usando solo HTML, CSS y JavaScript.
+        </p>
+        <button id="scrollToProducts">Ver productos</button>
+      </div>
+      <div class="hero-visual"></div>
+    </section>
+
+    <section>
+      <h3 class="products-title">Productos destacados</h3>
+      <div class="products-grid" id="productsGrid"></div>
+    </section>
+  </main>
+
+  <!-- Panel del carrito -->
+  <aside class="cart-panel" id="cartPanel">
+    <div class="cart-header">
+      <h3>Tu carrito</h3>
+      <button class="cart-close" id="closeCartBtn">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cartTotal">0,00 €</span>
+      </div>
+      <button class="cart-checkout" id="checkoutBtn">Finalizar compra</button>
+    </div>
+  </aside>
+
+  <footer>
+    © <span id="year"></span> Mi Tienda Online · Demo
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // Menu desplegable
+    const menuToggle = document.getElementById("menuToggle");
+    const menuDropdown = document.getElementById("menuDropdown");
+
+    menuToggle.addEventListener("click", () => {
+      menuDropdown.classList.toggle("active");
+    });
+
+    // Cerrar el menú al hacer clic en un enlace
+    const menuItems = document.querySelectorAll(".menu-item");
+    menuItems.forEach(item => {
+      item.addEventListener("click", () => {
+        menuDropdown.classList.remove("active");
+      });
+    });
+
+    // Cerrar el menú al hacer clic fuera
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".nav-menú")) {
+        menuDropdown.classList.remove("active");
+      }
+    });
+  </script>
+</body>
+</html>
