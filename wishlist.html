@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lista de deseos - Mait</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Lista de deseos</h1>
+        <div class="header-right">
+            <button onclick="window.location.href='index.html'" class="menu-toggle">← Volver</button>
+            <button class="cart-button" id="openCartBtn">
+            💰 Carrito
+        <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section style="max-width:1100px;margin:1.5rem auto;padding:1rem;">
+            <h2 style="margin-bottom:1rem;">Tus deseos</h2>
+            <div id="wishlistContainer" class="products-grid"></div>
+            <p id="emptyWishlist" style="color:#6b7280;margin-top:1rem;display:none;">No hay artículos en tu lista de deseos. <a href="index.html">Ver productos</a></p>
+        </section>
+    </main>
+
+    <footer>
+        © <span id="year"></span> Mait shop Online · Demo
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        // Mostrar año
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Key de wishlist por usuario
+    function getWishlistKey() {
+        const loggedUser = localStorage.getItem('loggedUser');
+        return loggedUser ? `wishlist_${loggedUser}` : 'wishlist';
+    }
+
+    function loadWishlist() {
+        const key = getWishlistKey();
+        try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+        } catch (e) {
+        return [];
+        }
+    }
+
+    function saveWishlist(list) {
+        const key = getWishlistKey();
+        localStorage.setItem(key, JSON.stringify(list));
+    }
+
+    function renderWishlist() {
+        const container = document.getElementById('wishlistContainer');
+        const empty = document.getElementById('emptyWishlist');
+        container.innerHTML = '';
+
+        const wishlist = loadWishlist();
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+
+        if (!wishlist || wishlist.length === 0) {
+        empty.style.display = 'block';
+        return;
+        }
+
+        empty.style.display = 'none';
+
+      // Wishlist may be an array of ids or product objects
+        const items = wishlist.map(w => {
+        if (typeof w === 'number') return products.find(p => p.id === w);
+        if (w && w.id) return products.find(p => p.id === w.id) || w;
+        return null;
+        }).filter(Boolean);
+
+        items.forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'product-card';
+        card.innerHTML = `
+            ${item.image ? `<img src="${item.image}" alt="${item.name}" class="product-image" style="height:150px;object-fit:cover;border-radius:8px;">` : `<div class="product-image">Sin imagen</div>`}
+            <h4 class="product-name">${item.name}</h4>
+            <p class="product-description">${item.description || ''}</p>
+            <div class="product-footer">
+            <span class="product-price">${(item.price||0).toFixed(2)} €</span>
+            <div style="display:flex;gap:.5rem;">
+                <button class="add-to-cart" data-id="${item.id}">Añadir al carrito</button>
+                <button class="remove-wish" data-id="${item.id}" style="background:#ef4444;color:#fff;border:none;padding:.35rem .6rem;border-radius:999px;cursor:pointer">Eliminar</button>
+            </div>
+            </div>
+        `;
+
+        container.appendChild(card);
+        });
+
+      // Añadir listeners
+        container.querySelectorAll('.remove-wish').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = Number(btn.getAttribute('data-id'));
+            let list = loadWishlist();
+            list = list.filter(i => (i.id ? i.id : i) !== id);
+            saveWishlist(list);
+            renderWishlist();
+        });
+        });
+
+        container.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = Number(btn.getAttribute('data-id'));
+            if (typeof addToCart === 'function') {
+            addToCart(id);
+            alert('Artículo añadido al carrito');
+            } else {
+            alert('Función de carrito no disponible');
+            }
+        });
+        });
+    }
+
+    // Inicial render
+    renderWishlist();
+    </script>
+</body>
+</html>

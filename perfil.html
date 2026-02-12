@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+<div style="display: flex; align-items: center; gap: 1rem; width: 100%;">
+    <button onclick="window.location.href='index.html'" style="background: #2563eb; color: white; border: none; padding: 0.6rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">🔙 Volver a la tienda</button>
+    <h1 style="flex: 1; text-align: center; margin: 0; font-size: 1.5rem;">Mi Perfil</h1>
+</div>
+</header>
+
+<div id="profileContainer"></div>
+
+<script>
+const email = localStorage.getItem("loggedUser");
+if (!email) window.location.href = "index.html";
+
+const users = JSON.parse(localStorage.getItem("users"));
+const user = users.find(u => u.email === email);
+
+if (!user) {
+    window.location.href = "index.html";
+}
+
+document.getElementById("profileContainer").innerHTML = `
+    <img src="${user.photo || 'https://via.placeholder.com/150'}" width="150" style="border-radius: 50%; border: 3px solid #2563eb;">
+    <h2>${user.name}</h2>
+    <p><strong>Correo:</strong> ${user.email}</p>
+
+    <h3>Datos personales</h3>
+    <input id="phone" placeholder="Teléfono" value="${user.phone || ''}">
+    <input id="address" placeholder="Dirección" value="${user.address || ''}">
+    <input type="file" id="photoInput">
+
+    <button id="saveBtn">Guardar cambios</button>
+
+    <h3>Cambiar contraseña</h3>
+    <input type="password" id="newPass" placeholder="Nueva contraseña">
+    <button id="changePassBtn">Cambiar contraseña</button>
+
+    <h3>Historial de compras</h3>
+    <ul id="purchaseList">
+    ${user.purchases && user.purchases.length === 0 ? "<li>No hay compras aún</li>" : (user.purchases || []).map(p => `<li>${p}</li>`).join("")}
+    </ul>
+
+    <button id="logoutBtn">Cerrar sesión</button>
+`;
+
+  // Guardar cambios
+document.getElementById("saveBtn").onclick = () => {
+    user.phone = document.getElementById("phone").value;
+    user.address = document.getElementById("address").value;
+
+    const file = document.getElementById("photoInput").files[0];
+    if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        user.photo = reader.result;
+        localStorage.setItem("users", JSON.stringify(users));
+        alert("Datos guardados");
+        location.reload();
+    };
+    reader.readAsDataURL(file);
+    } else {
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Datos guardados");
+    }
+};
+
+  // Cambiar contraseña
+document.getElementById("changePassBtn").onclick = () => {
+    const newPass = document.getElementById("newPass").value;
+    if (!newPass) return alert("Escribe una nueva contraseña");
+
+    user.password = newPass;
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Contraseña actualizada");
+    document.getElementById("newPass").value = "";
+};
+
+  // Cerrar sesión
+document.getElementById("logoutBtn").onclick = () => {
+    localStorage.removeItem("loggedUser");
+    window.location.href = "index.html";
+};
+</script>
+
+</body>
+</html>

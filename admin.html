@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Administración</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: #1e293b;
+      color: white;
+      height: 100vh;
+      padding: 1rem;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+
+    .sidebar h2 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    .sidebar button {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      background: #334155;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .sidebar button:hover {
+      background: #475569;
+    }
+
+    /* Main content */
+    .main {
+      margin-left: 260px;
+      padding: 2rem;
+      width: calc(100% - 260px);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .product-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .product-row:last-child {
+      border-bottom: none;
+    }
+
+    .product-actions button {
+      margin-left: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #dc2626;
+      color: white;
+    }
+
+    .stats-box {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .stat {
+      flex: 1;
+      background: #e2e8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat h3 {
+      margin: 0;
+      font-size: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <h2>Admin Panel</h2>
+    <button onclick="showSection('products')">📦 Productos</button>
+    <button onclick="showSection('users')">👥 Usuarios</button>
+    <button onclick="showSection('purchases')">🧾 Compras</button>
+    <button onclick="logout()">🚪 Cerrar sesión</button>
+  </div>
+
+  <div class="main">
+
+    <h1 id="adminWelcome"></h1>
+
+    <div class="stats-box">
+      <div class="stat">
+        <h3 id="statProducts">0</h3>
+        <p>Productos</p>
+      </div>
+      <div class="stat">
+        <h3 id="statUsers">0</h3>
+        <p>Usuarios</p>
+      </div>
+      <div class="stat">
+        <h3 id="statPurchases">0</h3>
+        <p>Compras</p>
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div id="section-products" class="section">
+      <h2>Gestión de Productos</h2>
+      <button id="addProductBtn">➕ Añadir producto</button>
+      <div id="productList"></div>
+    </div>
+
+    <!-- Usuarios -->
+    <div id="section-users" class="section" style="display:none;">
+      <h2>Usuarios Registrados</h2>
+      <ul id="userList"></ul>
+    </div>
+
+    <!-- Compras -->
+    <div id="section-purchases" class="section" style="display:none;">
+      <h2>Historial de Compras</h2>
+      <ul id="purchaseHistory"></ul>
+    </div>
+
+    <div id="productModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#0008; justify-content:center; align-items:center; z-index:9999;">
+  <div style="background:white; padding:30px; border-radius:10px; width:400px; max-height:90vh; overflow-y:auto;">
+    <h3 style="margin-top:0;">Añadir producto</h3>
+    <div style="margin-bottom:15px;">
+      <label style="display:block; font-weight:600; margin-bottom:5px;">ID</label>
+      <input id="pId" placeholder="ID del producto" type="number" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:15px;">
+      <label style="display:block; font-weight:600; margin-bottom:5px;">Nombre</label>
+      <input id="pName" placeholder="Nombre del producto" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:15px;">
+      <label style="display:block; font-weight:600; margin-bottom:5px;">Precio</label>
+      <input id="pPrice" placeholder="Precio" type="number" step="0.01" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:15px;">
+      <label style="display:block; font-weight:600; margin-bottom:5px;">Categoría</label>
+      <select id="pCategory" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing:border-box;">
+        <option value="">Selecciona una categoría</option>
+        <option value="Camisetas">Camisetas</option>
+        <option value="Zapatos">Zapatos</option>
+        <option value="Pantalones">Pantalones</option>
+      </select>
+    </div>
+    <div style="margin-bottom:15px;">
+      <label style="display:block; font-weight:600; margin-bottom:5px;">Descripción</label>
+      <textarea id="pDesc" placeholder="Descripción del producto" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; box-sizing:border-box; min-height:80px;"></textarea>
+    </div>
+    <div style="margin-bottom:15px;">
+      <label style="display:block; font-weight:600; margin-bottom:5px;">Imagen</label>
+      <input id="pImage" type="file" accept="image/*" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px;">
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button id="saveProductBtn" style="flex:1; padding:10px; background:#16a34a; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600;">Guardar</button>
+      <button onclick="closeProductModal()" style="flex:1; padding:10px; background:#ef4444; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+  </div>
+
+<script>
+  const loggedUser = localStorage.getItem("loggedUser");
+  if (!loggedUser) window.location.href = "index.html";
+
+  const users = JSON.parse(localStorage.getItem("users"));
+  const admin = users.find(u => u.email === loggedUser);
+
+  if (!admin || admin.role !== "admin") {
+    window.location.href = "index.html";
+  }
+
+  document.getElementById("adminWelcome").textContent = "Bienvenido, " + admin.name;
+
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+
+  function saveProducts() {
+    localStorage.setItem("products", JSON.stringify(products));
+  }
+
+  function showSection(section) {
+    document.getElementById("section-products").style.display = "none";
+    document.getElementById("section-users").style.display = "none";
+    document.getElementById("section-purchases").style.display = "none";
+
+    document.getElementById("section-" + section).style.display = "block";
+  }
+
+  function renderProducts() {
+    const container = document.getElementById("productList");
+    container.innerHTML = products.map((p, i) => `
+      <div class="product-row" style="align-items: center; gap: 1rem;">
+        ${p.image ? `<img src="${p.image}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">` : `<div style="width: 80px; height: 80px; background: #ddd; border-radius: 6px; display: flex; align-items: center; justify-content: center;">Sin imagen</div>`}
+        <div style="flex: 1;">
+          <strong>${p.name}</strong><br>
+          <small><strong>ID:</strong> ${p.id} | <strong>Categoría:</strong> ${p.category || 'Sin categoría'}</small><br>
+          <small>${p.description}</small><br>
+          <small><strong>Precio:</strong> ${p.price} €</small>
+        </div>
+        <div class="product-actions">
+          <button class="edit-btn" onclick="editProduct(${i})">Editar</button>
+          <button class="delete-btn" onclick="deleteProduct(${i})">Eliminar</button>
+        </div>
+      </div>
+    `).join("");
+
+    document.getElementById("statProducts").textContent = products.length;
+  }
+
+  document.getElementById("addProductBtn").onclick = openProductModal;
+
+  window.editProduct = function(i) {
+    const p = products[i];
+    const pIdInput = document.getElementById("pId");
+    pIdInput.value = p.id;
+    pIdInput.readOnly = true;
+    pIdInput.style.background = "#f5f5f5";
+    
+    document.getElementById("pName").value = p.name;
+    document.getElementById("pPrice").value = p.price;
+    document.getElementById("pCategory").value = p.category || "";
+    document.getElementById("pDesc").value = p.description;
+    
+    const modal = document.getElementById("productModal");
+    const saveBtn = document.getElementById("saveProductBtn");
+    const title = modal.querySelector("h3");
+    title.textContent = "Editar producto";
+    
+    const oldOnClick = saveBtn.onclick;
+    saveBtn.onclick = () => {
+      const name = document.getElementById("pName").value;
+      const price = parseFloat(document.getElementById("pPrice").value);
+      const category = document.getElementById("pCategory").value;
+      const description = document.getElementById("pDesc").value;
+      const imageFile = document.getElementById("pImage").files[0];
+
+      if (!name || !price || !category || !description) {
+        alert("Completa todos los campos");
+        return;
+      }
+
+      if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          products[i] = {
+            ...p,
+            name,
+            price,
+            category,
+            description,
+            image: reader.result
+          };
+          saveProducts();
+          closeProductModal();
+          renderProducts();
+          saveBtn.onclick = oldOnClick;
+          title.textContent = "Añadir producto";
+        };
+        reader.readAsDataURL(imageFile);
+      } else {
+        products[i] = {
+          ...p,
+          name,
+          price,
+          category,
+          description
+        };
+        saveProducts();
+        closeProductModal();
+        renderProducts();
+        saveBtn.onclick = oldOnClick;
+        title.textContent = "Añadir producto";
+      }
+    };
+    
+    modal.style.display = "flex";
+  };
+
+  window.deleteProduct = function(i) {
+    if (confirm("¿Eliminar este producto?")) {
+      products.splice(i, 1);
+      saveProducts();
+      renderProducts();
+    }
+  };
+
+  function renderUsers() {
+    const list = document.getElementById("userList");
+    list.innerHTML = users.map((u, i) => `
+      <li>
+        ${u.email} — ${u.role || "usuario"}
+        <button onclick="resetPassword(${i})">Restablecer contraseña</button>
+      </li>
+    `).join("");
+
+    document.getElementById("statUsers").textContent = users.length;
+  }
+
+  function renderPurchases() {
+    const list = document.getElementById("purchaseHistory");
+    list.innerHTML = "";
+
+    let totalPurchases = 0;
+
+    // Recargar usuarios desde localStorage para obtener compras actualizadas
+    const updatedUsers = JSON.parse(localStorage.getItem("users"));
+    updatedUsers.forEach(u => {
+      if (u.purchases && u.purchases.length > 0) {
+        u.purchases.forEach(p => {
+          totalPurchases++;
+          list.innerHTML += `<li>${u.email}: ${p}</li>`;
+        });
+      }
+    });
+
+    document.getElementById("statPurchases").textContent = totalPurchases;
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedUser");
+    window.location.href = "index.html";
+  }
+
+  renderProducts();
+  renderUsers();
+  renderPurchases();
+
+// Función para restablecer la contraseña de un usuario
+  window.resetPassword = function(index) {
+    const user = users[index];
+
+    const newPass = prompt("Nueva contraseña para " + user.email + ":");
+
+    if (!newPass) {
+      alert("No se ha cambiado la contraseña.");
+      return;
+    }
+
+    user.password = newPass;
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Contraseña actualizada correctamente.");
+  };
+  function openProductModal() {
+  const pIdInput = document.getElementById("pId");
+  pIdInput.value = "";
+  pIdInput.readOnly = false;
+  pIdInput.style.background = "white";
+  
+  document.getElementById("pName").value = "";
+  document.getElementById("pPrice").value = "";
+  document.getElementById("pCategory").value = "";
+  document.getElementById("pDesc").value = "";
+  document.getElementById("pImage").value = "";
+  document.querySelector("#productModal h3").textContent = "Añadir producto";
+  document.getElementById("productModal").style.display = "flex";
+}
+
+function closeProductModal() {
+  document.getElementById("productModal").style.display = "none";
+  document.getElementById("pId").value = "";
+  document.getElementById("pName").value = "";
+  document.getElementById("pPrice").value = "";
+  document.getElementById("pCategory").value = "";
+  document.getElementById("pDesc").value = "";
+  document.getElementById("pImage").value = "";
+  document.querySelector("#productModal h3").textContent = "Añadir producto";
+}
+
+  document.getElementById("saveProductBtn").onclick = function saveNewProduct() {
+    const id = document.getElementById("pId").value ? parseInt(document.getElementById("pId").value) : Date.now();
+    const name = document.getElementById("pName").value;
+    const price = parseFloat(document.getElementById("pPrice").value);
+    const category = document.getElementById("pCategory").value;
+    const description = document.getElementById("pDesc").value;
+    const imageFile = document.getElementById("pImage").files[0];
+
+    if (!name || !price || !category || !description || !imageFile) {
+      alert("Completa todos los campos");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const newProduct = {
+        id: id,
+        name,
+        price,
+        category,
+        description,
+        image: reader.result
+      };
+
+      products.push(newProduct);
+      saveProducts();
+      
+      document.getElementById("pId").value = "";
+      document.getElementById("pName").value = "";
+      document.getElementById("pPrice").value = "";
+      document.getElementById("pCategory").value = "";
+      document.getElementById("pDesc").value = "";
+      document.getElementById("pImage").value = "";
+      
+      closeProductModal();
+      renderProducts();
+    };
+
+    reader.readAsDataURL(imageFile);
+  };
+
+</script>
+
+</body>
+</html>

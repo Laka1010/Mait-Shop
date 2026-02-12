@@ -5,30 +5,31 @@
   <title>Mait</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css">
-
+</head>
+<body>
   <!-- Modal Registro -->
   <div class="modal" id="registerModal">
     <div class="modal-content">
       <h3>Registrarse</h3>
       <input type="email" id="regEmail" placeholder="Correo">
       <input type="password" id="regPassword" placeholder="Contraseña">
-      <button id="registerBtn">Registrar</button>
+      <input type="text" id="regName" placeholder="Nombre completo">
+      <button id="registerBtn">Crear cuenta</button>
       <button class="closeModal">Cerrar</button>
     </div>
-
-<!-- Modal Login -->
-<div class="modal" id="loginModal">
-  <div class="modal-content">
-    <h3>Iniciar sesión</h3>
-    <input type="email" id="logEmail" placeholder="Correo">
-    <input type="password" id="logPassword" placeholder="Contraseña">
-    <button id="loginBtn">Entrar</button>
-    <button class="closeModal">Cerrar</button>
   </div>
-</div>
 
-</head>
-<body>
+  <!-- Modal Login -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <h3>Iniciar sesión</h3>
+      <input type="email" id="logEmail" placeholder="Correo">
+      <input type="password" id="logPassword" placeholder="Contraseña">
+      <button id="loginBtn">Entrar</button>
+      <button class="closeModal">Cerrar</button>
+    </div>
+  </div>
+
   <header>
     <nav class="nav-menú">
       <button class="menu-toggle" id="menuToggle">
@@ -41,16 +42,24 @@
       </ul>
     </nav>
     
+    <!-- Menú de usuario (moveré dentro de .header-right para alinearlo a la derecha) -->
+    
     <h1>Mait shop</h1>
     
-    <button class="cart-button" id="openCartBtn">
-      💰 Carrito
-      <span class="cart-count" id="cartCount">0</span>
-    </button>
-
-    <div class="auth-buttons">
-      <button id="btnLogin">Iniciar sesión</button>
-      <button id="btnRegister">Registrarse</button>
+    <div class="header-right">
+      <nav class="nav-menú nav-right">
+        <button class="menu-toggle" id="userMenuToggle">👤 Cuenta</button>
+        <ul class="menu-dropdown" id="userMenuDropdown">
+          <li><a href="#" class="menu-item" id="menuProfile">Perfil</a></li>
+          <li><a href="#" class="menu-item" id="menuLogin">Iniciar sesión</a></li>
+          <li><a href="#" class="menu-item" id="menuRegister">Registrarse</a></li>
+          <li><a href="#" class="menu-item" id="menuWishlist">Lista de deseos</a></li>
+        </ul>
+      </nav>
+      <button class="cart-button" id="openCartBtn">
+        💰 Carrito
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
     </div>
   </header>
 
@@ -89,31 +98,93 @@
   </aside>
 
   <footer>
-    © <span id="year"></span> Mi Tienda Online · Demo
+    © <span id="year"></span> Mait shop Online · Demo
   </footer>
 
   <script src="app.js"></script>
   <script>
-    // Menu desplegable
+    // Menús desplegables (Categorías + Usuario)
     const menuToggle = document.getElementById("menuToggle");
     const menuDropdown = document.getElementById("menuDropdown");
+    const userToggle = document.getElementById("userMenuToggle");
+    const userDropdown = document.getElementById("userMenuDropdown");
 
-    menuToggle.addEventListener("click", () => {
-      menuDropdown.classList.toggle("active");
-    });
-
-    // Cerrar el menú al hacer clic en un enlace
-    const menuItems = document.querySelectorAll(".menu-item");
-    menuItems.forEach(item => {
-      item.addEventListener("click", () => {
-        menuDropdown.classList.remove("active");
+    // Alternar menú de categorías
+    if (menuToggle) {
+      menuToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        menuDropdown.classList.toggle("active");
+        if (userDropdown) userDropdown.classList.remove("active");
       });
-    });
+    }
 
-    // Cerrar el menú al hacer clic fuera
+    // Alternar menú de usuario
+    if (userToggle) {
+      userToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle("active");
+        if (menuDropdown) menuDropdown.classList.remove("active");
+      });
+    }
+
+    // Cerrar dropdowns al hacer clic en un item (cada dropdown cierra el suyo)
+    const catItems = document.querySelectorAll("#menuDropdown .menu-item");
+    catItems.forEach(item => item.addEventListener("click", () => {
+      menuDropdown.classList.remove("active");
+    }));
+
+    const userItems = document.querySelectorAll("#userMenuDropdown .menu-item");
+    userItems.forEach(item => item.addEventListener("click", () => {
+      userDropdown.classList.remove("active");
+    }));
+
+    // Mapear acciones de usuario (abrir modales / wishlist)
+    const menuLogin = document.getElementById('menuLogin');
+    const menuRegister = document.getElementById('menuRegister');
+    const menuWishlist = document.getElementById('menuWishlist');
+
+    if (menuLogin) {
+      menuLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) loginModal.style.display = 'flex';
+      });
+    }
+
+    if (menuRegister) {
+      menuRegister.addEventListener('click', (e) => {
+        e.preventDefault();
+        const registerModal = document.getElementById('registerModal');
+        if (registerModal) registerModal.style.display = 'flex';
+      });
+    }
+
+    // Perfil
+    const menuProfile = document.getElementById('menuProfile');
+    if (menuProfile) {
+      menuProfile.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'perfil.html';
+      });
+    }
+
+    if (menuWishlist) {
+      menuWishlist.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Redirigir a wishlist si existe, si no mostrar alerta
+        try {
+          window.location.href = 'wishlist.html';
+        } catch (err) {
+          alert('Lista de deseos (demo)');
+        }
+      });
+    }
+
+    // Cerrar los menús al hacer clic fuera
     document.addEventListener("click", (e) => {
       if (!e.target.closest(".nav-menú")) {
-        menuDropdown.classList.remove("active");
+        if (menuDropdown) menuDropdown.classList.remove("active");
+        if (userDropdown) userDropdown.classList.remove("active");
       }
     });
   </script>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Camisetas</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <title>Camisetas</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -14,9 +14,7 @@
         💰 Carrito
         <span class="cart-count" id="cartCount">0</span>
     </button>
-    <button class="pantalones-button" onclick="window.location.href='index.html'">
-        🔙
-    </button>
+    <button onclick="window.location.href='index.html'" class="menu-toggle">← Volver</button>
     <nav class="nav-menú">
     <button class="menu-toggle" id="menuToggle">
     ☰ Categorías
@@ -57,5 +55,29 @@
 </footer>
 
 <script src="app.js"></script>
+<script>
+  // Menu desplegable
+    const menuToggle = document.getElementById("menuToggle");
+    const menuDropdown = document.getElementById("menuDropdown");
+
+    menuToggle.addEventListener("click", () => {
+    menuDropdown.classList.toggle("active");
+    });
+
+  // Cerrar el menú al hacer clic en un enlace
+    const menuItems = document.querySelectorAll(".menu-item");
+    menuItems.forEach(item => {
+    item.addEventListener("click", () => {
+    menuDropdown.classList.remove("active");
+    });
+});
+
+  // Cerrar el menú al hacer clic fuera
+    document.addEventListener("click", (e) => {
+    if (!e.target.closest(".nav-menú")) {
+        menuDropdown.classList.remove("active");
+    }
+    });
+</script>
 </body>
 </html>

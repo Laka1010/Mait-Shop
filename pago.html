@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Pago</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .pay-box { max-width: 400px; margin: auto; padding: 1.5rem; background: white; border-radius: 10px; }
+    .pay-box h2 { text-align: center; }
+    .pay-method { margin: 1rem 0; }
+    .pay-method label { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .pay-btn { width: 100%; padding: 0.8rem; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="pay-box">
+  <button onclick="window.location.href='index.html'" class="menu-toggle" style="margin-bottom:1rem;">← Volver</button>
+  <h2>Finalizar pago</h2>
+
+  <p>Total: <strong id="totalAmount"></strong></p>
+
+  <div class="pay-method">
+    <label><input type="radio" name="method" value="tarjeta"> Tarjeta de crédito</label>
+    <label><input type="radio" name="method" value="paypal"> PayPal</label>
+    <label><input type="radio" name="method" value="contra"> Contra reembolso</label>
+  </div>
+
+  <button class="pay-btn" id="payBtn">Pagar ahora</button>
+</div>
+
+<script>
+  const loggedUser = localStorage.getItem("loggedUser");
+  if (!loggedUser) window.location.href = "index.html";
+
+  const cartKey = "cart_" + loggedUser;
+  const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2);
+  document.getElementById("totalAmount").textContent = total + " €";
+
+document.getElementById("payBtn").onclick = () => {
+    const method = document.querySelector("input[name='method']:checked");
+
+    if (!method) {
+    alert("Selecciona un método de pago");
+    return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("users"));
+    const user = users.find(u => u.email === loggedUser);
+
+    const purchaseDate = new Date().toLocaleDateString("es-ES");
+    const items = cart.map(i => `${i.name} (x${i.quantity})`).join(", ");
+
+    user.purchases.push(`${purchaseDate} - ${items} - €${total} - Método: ${method.value}`);
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    localStorage.removeItem(cartKey);
+
+    alert("Pago completado con éxito.\nMétodo: " + method.value);
+    window.location.href = "perfil.html";
+};
+</script>
+
+</body>
+</html>
